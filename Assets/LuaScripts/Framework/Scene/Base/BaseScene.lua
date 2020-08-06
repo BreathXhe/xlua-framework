@@ -3,10 +3,11 @@
 -- 场景基类，各场景类从这里继承：提供统一的场景加载和初始化步骤，负责资源预加载
 --]]
 
+---@class BaseScene
 local BaseScene = BaseClass("BaseScene")
 
 -- 构造函数，别重写，初始化放OnInit
-local function __init(self, scene_config)
+function BaseScene:__init(scene_config)
 	-- 场景配置
 	self.scene_config = scene_config
 	-- 预加载资源：资源路径、资源类型
@@ -17,17 +18,17 @@ local function __init(self, scene_config)
 end
 
 -- 析构函数，别重写，资源释放放OnDispose
-local function __delete(self)
+function BaseScene:__delete()
 	self:OnDestroy()
 end
 
 -- 创建：初始化一些需要全局保存的状态
-local function OnCreate(self)
+function BaseScene:OnCreate()
 end
 
 -- 添加预加载资源
 -- 注意：只有prefab类型才需要填inst_count，用于指定初始实例化个数
-local function AddPreloadResource(self, path, res_type, inst_count)
+function BaseScene:AddPreloadResource(path, res_type, inst_count)
 	assert(res_type ~= nil)
 	assert(type(path) == "string" and #path > 0)
 	if res_type == typeof(CS.UnityEngine.GameObject) then
@@ -38,12 +39,12 @@ local function AddPreloadResource(self, path, res_type, inst_count)
 end
 
 -- 加载前的初始化
-local function OnEnter(self)
+function BaseScene:OnEnter()
 end
 
 -- 场景加载结束：后续资源准备（预加载等）
 -- 注意：这里使用协程，子类别重写了，需要加载的资源添加到列表就可以了
-local function CoOnPrepare(self)
+function BaseScene:CoOnPrepare()
 	local res_count = table.count(self.preload_resources)
 	local prefab_count = table.count(self.preload_prefab)
 	local total_count = res_count + prefab_count
@@ -76,27 +77,17 @@ local function CoOnPrepare(self)
 end
 
 -- 场景加载完毕
-local function OnComplete(self)
+function BaseScene:OnComplete()
 end
 
 -- 离开场景：清理场景资源
-local function OnLeave(self)
+function BaseScene:OnLeave()
 end
 
 -- 销毁：释放全局保存的状态
-local function OnDestroy(self)
+function BaseScene:OnDestroy()
 	self.scene_config = nil
 	self.preload_resources = nil
 end
-
-BaseScene.__init = __init
-BaseScene.__delete = __delete
-BaseScene.OnCreate = OnCreate
-BaseScene.AddPreloadResource = AddPreloadResource
-BaseScene.OnEnter = OnEnter
-BaseScene.CoOnPrepare = CoOnPrepare
-BaseScene.OnComplete = OnComplete
-BaseScene.OnLeave = OnLeave
-BaseScene.OnDestroy = OnDestroy
 
 return BaseScene

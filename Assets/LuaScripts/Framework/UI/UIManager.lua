@@ -10,6 +10,7 @@
 --]]
 
 local Messenger = require "Framework.Common.Messenger"
+---@class UIManager
 local UIManager = BaseClass("UIManager", Singleton)
 
 -- UIRoot路径
@@ -26,7 +27,7 @@ local MaxOrderPerWindow = 10
 local UINoticeTip = CS.UINoticeTip.Instance
 
 -- 构造函数
-local function __init(self)
+function UIManager:__init()
 	-- 成员变量
 	-- 消息中心
 	self.ui_message_center = Messenger.New()
@@ -71,23 +72,28 @@ local function __init(self)
 	end)
 end
 
+---@return UIManager
+function UIManager:GetInstance()
+	return Singleton.GetInstance(self)
+end
+
 -- 注册消息
-local function AddListener(self, e_type, e_listener)
+function UIManager:AddListener(e_type, e_listener)
 	self.ui_message_center:AddListener(e_type, e_listener)
 end
 
 -- 发送消息
-local function Broadcast(self, e_type, ...)
+function UIManager:Broadcast(e_type, ...)
 	self.ui_message_center:Broadcast(e_type, ...)
 end
 
 -- 注销消息
-local function RemoveListener(self, e_type, e_listener)
+function UIManager:RemoveListener(e_type, e_listener)
 	self.ui_message_center:RemoveListener(e_type, e_listener)
 end
 
 -- 获取窗口
-local function GetWindow(self, ui_name, active, view_active)
+function UIManager:GetWindow(ui_name, active, view_active)
 	local target = self.windows[ui_name]
 	if target == nil then
 		return nil
@@ -194,7 +200,7 @@ local function InnerCloseWindow(self, target)
 end
 
 -- 打开窗口：公有
-local function OpenWindow(self, ui_name, ...)
+function UIManager:OpenWindow(ui_name, ...)
 	local target = self:GetWindow(ui_name)
 	if not target then
 		local window = UIWindow.New()
@@ -221,7 +227,7 @@ local function OpenWindow(self, ui_name, ...)
 end
 
 -- 关闭窗口：公有
-local function CloseWindow(self, ui_name)
+function UIManager:CloseWindow(ui_name)
 	local target = self:GetWindow(ui_name, true)
 	if not target then
 		return
@@ -244,7 +250,7 @@ local function CloseWindow(self, ui_name)
 end
 
 -- 关闭层级所有窗口
-local function CloseWindowByLayer(self, layer)
+function UIManager:CloseWindowByLayer(layer)
 	for _,v in pairs(self.windows) do
 		if v.Layer:GetName() == layer.Name then
 			InnerCloseWindow(self, v)
@@ -253,7 +259,7 @@ local function CloseWindowByLayer(self, layer)
 end
 
 -- 关闭其它层级窗口
-local function CloseWindowExceptLayer(self, layer)
+function UIManager:CloseWindowExceptLayer(layer)
 	for _,v in pairs(self.windows) do
 		if v.Layer:GetName() ~= layer.Name then
 			InnerCloseWindow(self, v)
@@ -262,14 +268,14 @@ local function CloseWindowExceptLayer(self, layer)
 end
 
 -- 关闭所有窗口
-local function CloseAllWindows(self)
+function UIManager:CloseAllWindows()
 	for _,v in pairs(self.windows) do
 		InnerCloseWindow(self, v)
 	end
 end
 
 -- 展示窗口
-local function OpenView(self, ui_name, ...)
+function UIManager:OpenView(ui_name, ...)
 	local target = self:GetWindow(ui_name)
 	assert(target, "Try to show a window that does not exist: "..ui_name)
 	if not target.View:GetActive() then
@@ -278,7 +284,7 @@ local function OpenView(self, ui_name, ...)
 end
 
 -- 隐藏窗口
-local function CloseView(self, ui_name)
+function UIManager:CloseView(ui_name)
 	local target = self:GetWindow(ui_name)
 	assert(target, "Try to hide a window that does not exist: "..ui_name)
 	if target.View:GetActive() then
@@ -308,7 +314,7 @@ local function InnerDestroyWindow(self, ui_name, target, include_keep_model)
 end
 
 -- 销毁窗口
-local function DestroyWindow(self, ui_name, include_keep_model)
+function UIManager:DestroyWindow(ui_name, include_keep_model)
 	local target = self:GetWindow(ui_name)
 	if not target then
 		return
@@ -319,7 +325,7 @@ local function DestroyWindow(self, ui_name, include_keep_model)
 end
 
 -- 销毁层级所有窗口
-local function DestroyWindowByLayer(self, layer, include_keep_model)
+function UIManager:DestroyWindowByLayer(layer, include_keep_model)
 	for k,v in pairs(self.windows) do
 		if v.Layer:GetName() == layer.Name then
 			InnerCloseWindow(self, v)
@@ -329,7 +335,7 @@ local function DestroyWindowByLayer(self, layer, include_keep_model)
 end
 
 -- 销毁其它层级窗口
-local function DestroyWindowExceptLayer(self, layer, include_keep_model)
+function UIManager:DestroyWindowExceptLayer(layer, include_keep_model)
 	for k,v in pairs(self.windows) do
 		if v.Layer:GetName() ~= layer.Name then
 			InnerCloseWindow(self, v)
@@ -339,7 +345,7 @@ local function DestroyWindowExceptLayer(self, layer, include_keep_model)
 end
 
 -- 销毁所有窗口
-local function DestroyAllWindow(self, include_keep_model)
+function UIManager:DestroyAllWindow(include_keep_model)
 	for k,v in pairs(self.windows) do
 		InnerCloseWindow(self, v)
 		InnerDestroyWindow(self, k, v, include_keep_model)
@@ -347,7 +353,7 @@ local function DestroyAllWindow(self, include_keep_model)
 end
 
 -- 设置是否保持Model
-local function SetKeepModel(self, ui_name, keep)
+function UIManager:SetKeepModel(ui_name, keep)
 	local target = self:GetWindow(ui_name)
 	assert(target, "Try to keep a model that window does not exist: "..ui_name)
 	if keep then
@@ -358,12 +364,12 @@ local function SetKeepModel(self, ui_name, keep)
 end
 
 -- 获取保持的Model
-local function GetKeepModel(self, ui_name)
+function UIManager:GetKeepModel(ui_name)
 	return self.keep_model[ui_name]
 end
 
 -- 加入窗口记录栈
-local function AddToWindowStack(self, ui_name)
+function UIManager:AddToWindowStack(ui_name)
 	if not self.__enable_record then
 		return
 	end
@@ -374,7 +380,7 @@ local function AddToWindowStack(self, ui_name)
 end
 
 -- 从窗口记录栈中移除
-local function RemoveFormWindowStack(self, ui_name, only_check_top)
+function UIManager:RemoveFormWindowStack(ui_name, only_check_top)
 	if not self.__enable_record then
 		return
 	end
@@ -403,7 +409,7 @@ local function ClearWindowStack(self)
 end
 
 -- 获取最后添加的一个背景窗口索引
-local function GetLastBgWindowIndexInWindowStack(self)
+function UIManager:GetLastBgWindowIndexInWindowStack()
 	local bg_index = -1
 	for i = 1, table.count(self.__window_stack) do
 		local ui_name = self.__window_stack[i]
@@ -416,7 +422,7 @@ end
 
 -- 弹出栈
 -- 注意：从上一个记录的背景UI开始弹出之后所有被记录的窗口
-local function PopWindowStack(self)
+function UIManager:PopWindowStack()
 	local bg_index = self:GetLastBgWindowIndexInWindowStack()
 	if bg_index == -1 then
 		-- 没找到背景UI
@@ -425,7 +431,7 @@ local function PopWindowStack(self)
 		end
 		return
 	end
-	
+
 	self.__enable_record = false
 	local end_index = table.count(self.__window_stack)
 	for i = bg_index + 1, end_index  do
@@ -435,35 +441,8 @@ local function PopWindowStack(self)
 	self.__enable_record = true
 end
 
--- 展示Tip：单按钮
-local function OpenOneButtonTip(self, title, content, btnText, callback)
-	local ui_name = UIWindowNames.UINoticeTip
-	local cs_func = UINoticeTip.ShowOneButtonTip
-	self:OpenWindow(ui_name, cs_func, title, content, btnText, callback)
-end
-
--- 展示Tip：双按钮
-local function OpenTwoButtonTip(self, title, content, btnText1, btnText2, callback1, callback2)
-	local ui_name = UIWindowNames.UINoticeTip
-	local cs_func = UINoticeTip.ShowTwoButtonTip
-	self:OpenWindow(ui_name, cs_func, title, content, btnText1, btnText2, callback1, callback2)
-end
-
--- 展示Tip：三按钮
-local function OpenThreeButtonTip(self, title, content, btnText1, btnText2, btnText3, callback1, callback2, callback3)
-	local ui_name = UIWindowNames.UINoticeTip
-	local cs_func = UINoticeTip.ShowThreeButtonTip
-	self:OpenWindow(ui_name, cs_func, title, content, btnText1, btnText2, btnText3, callback1, callback2, callback3)
-end
-
--- 隐藏Tip
-local function CloseTip(self)
-	local ui_name = UIWindowNames.UINoticeTip
-	self:CloseWindow(ui_name)
-end
-
 -- 等待View层窗口创建完毕（资源加载完毕）：用于协程
-local function WaitForViewCreated(self, ui_name)
+function UIManager:WaitForViewCreated(ui_name)
 	local window = self:GetWindow(ui_name, true)
 	assert(window ~= nil, "Try to wait for a not opened window : "..ui_name)
 	if IsNull(window.View.gameObject) then
@@ -472,52 +451,18 @@ local function WaitForViewCreated(self, ui_name)
 	return window
 end
 
--- 等待Tip响应：用于协程，返回点击序号，-1表示无响应且窗口被异常关闭
-local function WaitForTipResponse(self)
-	local ui_name = UIWindowNames.UINoticeTip
-	local window = self:WaitForViewCreated(ui_name)
-	return window.Model:WaitForResponse()
+function UIManager:CheckOutClick(position)
+end
+
+function UIManager:CheckComponentClick(position)
 end
 
 -- 析构函数
-local function __delete(self)
+function UIManager:__delete()
 	self.ui_message_center = nil
 	self.windows = nil
 	self.layers = nil
 	self.keep_model = nil
 end
-
-UIManager.__init = __init
-UIManager.AddListener = AddListener
-UIManager.Broadcast = Broadcast
-UIManager.RemoveListener = RemoveListener
-UIManager.GetWindow = GetWindow
-UIManager.OpenWindow = OpenWindow
-UIManager.CloseWindow = CloseWindow
-UIManager.CloseWindowByLayer = CloseWindowByLayer
-UIManager.CloseWindowExceptLayer = CloseWindowExceptLayer
-UIManager.CloseAllWindows = CloseAllWindows
-UIManager.OpenView = OpenView
-UIManager.CloseView = CloseView
-UIManager.DestroyWindow = DestroyWindow
-UIManager.DestroyWindowByLayer = DestroyWindowByLayer
-UIManager.DestroyWindowExceptLayer = DestroyWindowExceptLayer
-UIManager.DestroyAllWindow = DestroyAllWindow
-UIManager.SetKeepModel = SetKeepModel
-UIManager.GetKeepModel = GetKeepModel
-UIManager.AddToWindowStack = AddToWindowStack
-UIManager.RemoveFormWindowStack = RemoveFormWindowStack
-UIManager.GetLastBgWindowIndexInWindowStack = GetLastBgWindowIndexInWindowStack
-UIManager.GetWindowStack = GetWindowStack
-UIManager.ClearWindowStack = ClearWindowStack
-UIManager.PopWindowStack = PopWindowStack
-UIManager.OpenOneButtonTip = OpenOneButtonTip
-UIManager.OpenTwoButtonTip = OpenTwoButtonTip
-UIManager.OpenThreeButtonTip = OpenThreeButtonTip
-UIManager.CloseTip = CloseTip
-UIManager.WaitForViewCreated = WaitForViewCreated
-UIManager.WaitForTipResponse = WaitForTipResponse
-UIManager.GetTipLastClickIndex = GetTipLastClickIndex
-UIManager.__delete = __delete
 
 return UIManager;

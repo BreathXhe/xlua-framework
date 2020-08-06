@@ -1,12 +1,16 @@
 --[[
--- added by wsh @ 2017-01-09
 -- 游戏逻辑Updater，游戏逻辑模块可能需要严格的驱动顺序
 --]]
 
+---@class LogicUpdater
 local LogicUpdater = BaseClass("LogicUpdater", UpdatableSingleton)
 local traceback = debug.traceback
 
-local function Update(self)
+function LogicUpdater:GetInstance()
+	return Singleton.GetInstance(self)
+end
+
+function LogicUpdater:Update()
 	local delta_time = Time.deltaTime
 	local hallConnector = HallConnector:GetInstance()
 	local status,err = pcall(hallConnector.Update, hallConnector)
@@ -15,18 +19,18 @@ local function Update(self)
 	end
 end
 
-local function LateUpdate(self)
+function LogicUpdater:LateUpdate()
 end
 
-local function FixedUpdate(self)
+function LogicUpdater:FixedUpdate()
 end
 
-local function Dispose(self)
+function LogicUpdater:Dispose()
 end
 
-LogicUpdater.Update = Update
-LogicUpdater.LateUpdate = LateUpdate
-LogicUpdater.FixedUpdate = FixedUpdate
-LogicUpdater.Dispose = Dispose
+-- LogicUpdater.Update = Update
+-- LogicUpdater.LateUpdate = LateUpdate
+-- LogicUpdater.FixedUpdate = FixedUpdate
+-- LogicUpdater.Dispose = Dispose
 
 return LogicUpdater

@@ -1,5 +1,4 @@
 --[[
--- added by wsh @ 2017-12-08
 -- UI组件基类：所有UI组件从这里继承
 -- 说明：
 -- 1、采用基于组件的设计方式，容器类负责管理和调度子组件，实现类似于Unity中挂载脚本的功能
@@ -13,6 +12,7 @@
 -- 5、需要定时刷新的界面，最好启用定时器、协程，界面需要刷新的频率一般较低，倒计时之类的只需要每秒钟更新一次即可
 --]]
 
+---@class UIBaseComponent:Updatable
 local UIBaseComponent = BaseClass("UIBaseComponent", Updatable)
 local base = Updatable
 
@@ -21,7 +21,7 @@ local base = Updatable
 -- 1、ComponentTypeClass.New(relative_path)
 -- 2、ComponentTypeClass.New(child_index)
 -- 3、ComponentTypeClass.New(unity_gameObject)
-local function __init(self, holder, var_arg)
+function UIBaseComponent:__init( holder, var_arg)
 	assert(not IsNull(holder), "Err : holder nil!")
 	assert(not IsNull(holder.transform), "Err : holder tansform nil!")
 	assert(not IsNull(var_arg), "Err: var_arg nil!")
@@ -46,12 +46,12 @@ local function __init(self, holder, var_arg)
 end
 
 -- 析构函数：所有组件的子类不要再写这个函数，释放工作全部放到OnDestroy
-local function __delete(self)
+function UIBaseComponent:__delete()
 	self:OnDestroy()
 end
 
 -- 创建
-local function OnCreate(self)
+function UIBaseComponent:OnCreate()
 	assert(not IsNull(self.holder), "Err : holder nil!")
 	assert(not IsNull(self.holder.transform), "Err : holder tansform nil!")
 	-- 初始化view
@@ -94,18 +94,18 @@ local function OnCreate(self)
 end
 
 -- 打开
-local function OnEnable(self)
+function UIBaseComponent:OnEnable()
 	-- 启用更新函数
 	self:EnableUpdate(true)
 end
 
 -- 获取名字
-local function GetName(self)
+function UIBaseComponent:GetName()
 	return self.__name
 end
 
 -- 设置名字：toUnity指定是否同时设置Unity侧的名字---不建议，实在想不到什么情况下会用，但是调试模式强行设置，好调试
-local function SetName(self, name, toUnity)
+function UIBaseComponent:SetName( name, toUnity)
 	if self.holder.OnComponentSetName ~= nil then
 		self.holder:OnComponentSetName(self, name)
 	end
@@ -120,17 +120,17 @@ local function SetName(self, name, toUnity)
 end
 
 -- 设置绑定数据
-local function SetBindData(self, data)
+function UIBaseComponent:SetBindData( data)
 	self.__bind_data = data
 end
 
 -- 获取绑定数据
-local function GetBindData(self)
+function UIBaseComponent:GetBindData()
 	return self.__bind_data
 end
 
 -- 激活、反激活
-local function SetActive(self, active)
+function UIBaseComponent:SetActive( active)
 	if active then
 		self.gameObject:SetActive(active)
 		self:OnEnable()
@@ -141,25 +141,25 @@ local function SetActive(self, active)
 end
 
 -- 获取激活状态
-local function GetActive(self)
+function UIBaseComponent:GetActive()
 	return self.gameObject.activeSelf
 end
 
 -- 等待资源准备完毕：用于协程
-local function WaitForCreated(self)
+function UIBaseComponent:WaitForCreated()
 	coroutine.waituntil(function()
 		return not IsNull(self.gameObject)
 	end)
 end
 
 -- 关闭
-local function OnDisable(self)
+function UIBaseComponent:OnDisable()
 	-- 禁用更新函数
 	self:EnableUpdate(false)
 end
 
 -- 销毁
-local function OnDestroy(self)
+function UIBaseComponent:OnDestroy()
 	if self.holder.OnComponentDestroy ~= nil then
 		self.holder:OnComponentDestroy(self)
 	end
@@ -171,18 +171,18 @@ local function OnDestroy(self)
 	self.__bind_data = nil
 end
 
-UIBaseComponent.__init = __init
-UIBaseComponent.__delete = __delete
-UIBaseComponent.OnCreate = OnCreate
-UIBaseComponent.OnEnable = OnEnable
-UIBaseComponent.GetName = GetName
-UIBaseComponent.SetName = SetName
-UIBaseComponent.SetBindData = SetBindData
-UIBaseComponent.GetBindData = GetBindData
-UIBaseComponent.SetActive = SetActive
-UIBaseComponent.GetActive = GetActive
-UIBaseComponent.WaitForCreated = WaitForCreated
-UIBaseComponent.OnDisable = OnDisable
-UIBaseComponent.OnDestroy = OnDestroy
+-- UIBaseComponent.__init = __init
+-- UIBaseComponent.__delete = __delete
+-- UIBaseComponent.OnCreate = OnCreate
+-- UIBaseComponent.OnEnable = OnEnable
+-- UIBaseComponent.GetName = GetName
+-- UIBaseComponent.SetName = SetName
+-- UIBaseComponent.SetBindData = SetBindData
+-- UIBaseComponent.GetBindData = GetBindData
+-- UIBaseComponent.SetActive = SetActive
+-- UIBaseComponent.GetActive = GetActive
+-- UIBaseComponent.WaitForCreated = WaitForCreated
+-- UIBaseComponent.OnDisable = OnDisable
+-- UIBaseComponent.OnDestroy = OnDestroy
 
 return UIBaseComponent

@@ -1,5 +1,4 @@
 --[[
--- added by wsh @ 2018-02-26
 -- UITestMain控制层
 --]]
 

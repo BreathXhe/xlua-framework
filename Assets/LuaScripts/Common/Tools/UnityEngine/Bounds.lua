@@ -13,7 +13,7 @@ local type = type
 local Vector3 = Vector3
 local zero = Vector3.zero
 
-local Bounds = 
+local Bounds =
 {
 	center = Vector3.zero,
 	extents = Vector3.zero,
@@ -27,25 +27,25 @@ Bounds.__index = function(t,k)
 	if var ~= nil then
 		return var
 	end
-	
+
 	var = rawget(_getter, k)
 	if var ~= nil then
 		return var(t)
 	end
-	
+
 	return rawget(unity_bounds, k)
 end
 
 Bounds.__call = function(t, center, size)
-	return setmetatable({center = center, extents = size * 0.5}, Bounds)		
+	return setmetatable({center = center, extents = size * 0.5}, Bounds)
 end
 
-function Bounds.New(center, size)	
-	return setmetatable({center = center, extents = size * 0.5}, Bounds)		
+function Bounds.New(center, size)
+	return setmetatable({center = center, extents = size * 0.5}, Bounds)
 end
 
 function Bounds:Get()
-	local size = self:GetSize()	
+	local size = self:GetSize()
 	return self.center, size
 end
 
@@ -82,7 +82,7 @@ function Bounds:Encapsulate(point)
 	self:SetMinMax(Vector3.Min(self:GetMin(), point), Vector3.Max(self:GetMax(), point))
 end
 
-function Bounds:Expand(amount)	
+function Bounds:Expand(amount)
 	if type(amount) == "number" then
 		amount = amount * 0.5
 		self.extents:Add(Vector3.New(amount, amount, amount))
@@ -94,28 +94,28 @@ end
 function Bounds:Intersects(bounds)
 	local min = self:GetMin()
 	local max = self:GetMax()
-	
+
 	local min2 = bounds:GetMin()
 	local max2 = bounds:GetMax()
-	
+
 	return min.x <= max2.x and max.x >= min2.x and min.y <= max2.y and max.y >= min2.y and min.z <= max2.z and max.z >= min2.z
-end    
+end
 
 function Bounds:Contains(p)
 	local min = self:GetMin()
 	local max = self:GetMax()
-	
+
 	if p.x < min.x or p.y < min.y or p.z < min.z or p.x > max.x or p.y > max.y or p.z > max.z then
 		return false
 	end
-	
+
 	return true
 end
 
 function Bounds:IntersectRay(ray)
 	local tmin = -Mathf.Infinity
 	local tmax = Mathf.Infinity
-	
+
 	local t0, t1, f
 	local t = self:GetCenter () - ray:GetOrigin()
 	local p = {t.x, t.y, t.z}
@@ -123,25 +123,25 @@ function Bounds:IntersectRay(ray)
 	local extent = {t.x, t.y, t.z}
 	t = ray:GetDirection()
 	local dir = {t.x, t.y, t.z}
-  
+
 	for i = 1, 3 do	
 		f = 1 / dir[i]
 		t0 = (p[i] + extent[i]) * f
 		t1 = (p[i] - extent[i]) * f
-			
-		if t0 < t1 then			
-			if t0 > tmin then tmin = t0 end				
-			if t1 < tmax then tmax = t1 end				
-			if tmin > tmax then return false end				
-			if tmax < 0 then return false end        
-		else			
-			if t1 > tmin then tmin = t1 end				
-			if t0 < tmax then tmax = t0 end				
-			if tmin > tmax then return false end				
+
+		if t0 < t1 then
+			if t0 > tmin then tmin = t0 end
+			if t1 < tmax then tmax = t1 end
+			if tmin > tmax then return false end
+			if tmax < 0 then return false end
+		else
+			if t1 > tmin then tmin = t1 end
+			if t0 < tmax then tmax = t0 end
+			if tmin > tmax then return false end
 			if tmax < 0 then return false end
 		end
 	end
-	
+
 	return true, tmin
 end
 
@@ -152,9 +152,9 @@ function Bounds:ClosestPoint(point)
 	local extent = {et.x, et.y, et.z}
 	local distance = 0
 	local delta
-	
-	for i = 1, 3 do	
-		if  closest[i] < - extent[i] then		
+
+	for i = 1, 3 do
+		if  closest[i] < - extent[i] then
 			delta = closest[i] + extent[i]
 			distance = distance + delta * delta
 			closest[i] = -extent[i]
@@ -164,10 +164,10 @@ function Bounds:ClosestPoint(point)
 			closest[i] = extent[i]
 		end
 	end
-		
-	if distance == 0 then	    
+
+	if distance == 0 then
 		return rkPoint, 0
-	else	
+	else
 		outPoint = closest + self:GetCenter()
 		return outPoint, distance
 	end
@@ -178,7 +178,7 @@ function Bounds:Destroy()
 	self.size	= nil
 end
 
-Bounds.__tostring = function(self)	
+Bounds.__tostring = function(self)
 	return string.format("Center: %s, Extents %s", tostring(self.center), tostring(self.extents))
 end
 

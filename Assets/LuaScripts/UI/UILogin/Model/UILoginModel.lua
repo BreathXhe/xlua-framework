@@ -1,5 +1,4 @@
 --[[
--- added by wsh @ 2017-12-01
 -- UILogin模型层
 -- 注意：
 -- 1、成员变量预先在OnCreate、OnEnable函数声明，提高代码可读性
@@ -8,17 +7,18 @@
 -- 4、OnEnable函数每次在窗口打开时调用，可传递参数用来初始化Model
 --]]
 
+---@class UILoginModel:UIBaseModel
 local UILoginModel = BaseClass("UILoginModel", UIBaseModel)
 local base = UIBaseModel
 
 -- 创建
-local function OnCreate(self)
+function UILoginModel:OnCreate()
 	base.OnCreate(self)
 	-- 窗口生命周期内保持的成员变量放这
 end
 
 -- 打开
-local function OnEnable(self)
+function UILoginModel:OnEnable()
 	base.OnEnable(self)
 	-- 窗口关闭时可以清理的成员变量放这
 	-- 账号
@@ -47,7 +47,7 @@ local function SetServerInfo(self, select_svr_id)
 end
 
 -- 刷新全部数据
-local function OnRefresh(self)
+function UILoginModel:OnRefresh()
 	local client_data = ClientData:GetInstance()
 	self.account = client_data.account
 	self.password = client_data.password
@@ -62,18 +62,18 @@ local function OnSelectedSvrChg(self, id)
 end
 
 -- 监听选服变动
-local function OnAddListener(self)
+function UILoginModel:OnAddListener()
 	base.OnAddListener(self)
 	self:AddDataListener(DataMessageNames.ON_LOGIN_SERVER_ID_CHG, OnSelectedSvrChg)
 end
 
-local function OnRemoveListener(self)
+function UILoginModel:OnRemoveListener()
 	base.OnRemoveListener(self)
 	self:RemoveDataListener(DataMessageNames.ON_LOGIN_SERVER_ID_CHG, OnSelectedSvrChg)
 end
 
 -- 关闭
-local function OnDisable(self)
+function UILoginModel:OnDisable()
 	base.OnDisable(self)
 	-- 清理成员变量
 	self.account = nil
@@ -85,17 +85,17 @@ local function OnDisable(self)
 end
 
 -- 销毁
-local function OnDistroy(self)
+function UILoginModel:OnDistroy()
 	base.OnDistroy(self)
 	-- 清理成员变量
 end
 
-UILoginModel.OnCreate = OnCreate
-UILoginModel.OnEnable = OnEnable
-UILoginModel.OnRefresh = OnRefresh
-UILoginModel.OnAddListener = OnAddListener
-UILoginModel.OnRemoveListener = OnRemoveListener
-UILoginModel.OnDisable = OnDisable
-UILoginModel.OnDistroy = OnDistroy
+-- UILoginModel.OnCreate = OnCreate
+-- UILoginModel.OnEnable = OnEnable
+-- UILoginModel.OnRefresh = OnRefresh
+-- UILoginModel.OnAddListener = OnAddListener
+-- UILoginModel.OnRemoveListener = OnRemoveListener
+-- UILoginModel.OnDisable = OnDisable
+-- UILoginModel.OnDistroy = OnDistroy
 
 return UILoginModel

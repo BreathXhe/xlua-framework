@@ -1,5 +1,4 @@
 --[[
--- added by wsh @ 2017-12-05
 -- Singleton单元测试
 --]]
 

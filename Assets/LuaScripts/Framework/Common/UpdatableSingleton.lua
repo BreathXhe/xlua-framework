@@ -1,25 +1,25 @@
 --[[
--- added by wsh @ 2017-01-09
 -- 可更新单例脚本，等效于MonoSignleton
 --]]
 
+---@class UpdatableSingleton:Updatable
 local UpdatableSingleton = BaseClass("UpdatableSingleton", Updatable)
 
-local function __init(self)
+function UpdatableSingleton:__init()
 	assert(rawget(self._class_type, "Instance") == nil, self._class_type.__cname.." to create UpdatableSingleton twice!")
 	rawset(self._class_type, "Instance", self)
 end
 
-local function __delete(self)
+function UpdatableSingleton:__delete()
 	rawset(self._class_type, "Instance", nil)
 end
 
 -- 只是用于启动模块
-local function Startup(self)
+function UpdatableSingleton:Startup()
 end
 
 -- 不要重写
-local function GetInstance(self)
+function UpdatableSingleton:GetInstance()
 	if rawget(self, "Instance") == nil then
 		rawset(self, "Instance", self.New())
 	end
@@ -28,14 +28,14 @@ local function GetInstance(self)
 end
 
 -- 不要重写
-local function Delete(self)
+function UpdatableSingleton:Delete()
 	self.Instance = nil
 end
 
-UpdatableSingleton.__init = __init
-UpdatableSingleton.__delete = __delete
-UpdatableSingleton.Startup = Startup
-UpdatableSingleton.GetInstance = GetInstance
-UpdatableSingleton.Destory = Destory
+-- UpdatableSingleton.__init = __init
+-- UpdatableSingleton.__delete = __delete
+-- UpdatableSingleton.Startup = Startup
+-- UpdatableSingleton.GetInstance = GetInstance
+-- UpdatableSingleton.Destory = Destory
 
 return UpdatableSingleton

@@ -1,5 +1,4 @@
 --[[
--- added by wsh @ 2017-01-12
 --]]
 
 local function Run()

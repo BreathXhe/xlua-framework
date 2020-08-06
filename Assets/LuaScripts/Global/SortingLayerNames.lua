@@ -1,5 +1,4 @@
 --[[
--- added by wsh @ 2017-12-13
 -- sorting layer名字配置
 --]]
 

@@ -1,9 +1,9 @@
 --[[
--- added by wsh @ 2017-12-04
 -- UILoginServerView视图层
 --]]
 
 local UIServerWrapItem = require "UI.UILogin.Component.UIServerWrapItem"
+---@class UILoginServerView:UIBaseView
 local UILoginServerView = BaseClass("UILoginServerView", UIBaseView)
 local base = UIBaseView
 
@@ -16,14 +16,14 @@ local svr_scroll_content_path = "ContentRoot/SvrScrollView/SvrScrollRect/SvrScro
 local area_btn_text_path = "Text"
 local recommend_btn_virtual_index = -1
 
-local function OnCreate(self)
+function UILoginServerView:OnCreate()
 	base.OnCreate(self)
-	
+
 	-- 1、按钮初始化
 	self.back_btn = self:AddComponent(UIButton, back_btn_path)
 	self.confirm_btn = self:AddComponent(UIButton, confirm_btn_path)
 	self.recommend_btn = self:AddComponent(UIToggleButton, recommend_btn_path)
-	
+
 	-- 2、区域列表初始化
 	-- A）不继承UIWrapComponent去实现子类，而是直接挂载组件
 	-- B）添加按钮组，area_wrapgroup下所以按钮以UIToggleButton组件实例添加到按钮组
@@ -34,7 +34,7 @@ local function OnCreate(self)
 	end)
 	self.area_wrapgroup:AddButtonGroup(UIToggleButton)
 	self.area_wrapgroup:AddButton(UIToggleButton, self.recommend_btn, recommend_btn_virtual_index)
-	
+
 	-- 3、服务器列表初始化
 	-- A）继承UIWrapComponent去实现子类
 	-- B）添加按钮组，area_wrapgroup下所以按钮以UIToggleButton组件实例添加到按钮组
@@ -42,7 +42,7 @@ local function OnCreate(self)
 	self.server_list = nil
 	self.selected_server_id = nil
 	self.svr_wrapgroup:AddButtonGroup(UIToggleButton)
-	
+
 	-- 4、按钮点击回调
 	self.back_btn:SetOnClick(function()
 		self.ctrl:CloseSelf()
@@ -51,7 +51,7 @@ local function OnCreate(self)
 		self.ctrl:SetSelectedServer(self.selected_server_id)
 		self.ctrl:CloseSelf()
 	end)
-	
+
 	-- 5、区域列表回调：
 	-- A）area_wrapgroup使用挂载组件的方式，必须注册刷新和按钮点击回调
 	-- B）设置默认选中推荐按钮
@@ -60,19 +60,19 @@ local function OnCreate(self)
 	self.area_wrapgroup:SetOriginal(recommend_btn_virtual_index)
 end
 
-local function OnEnable(self)
+function UILoginServerView:OnEnable()
 	base.OnEnable(self)
-	
+
 	-- 获取model层当前选择server
 	self.selected_server_id = self.model.selected_server_id
-	
+
 	-- 各组件刷新，重置wrapgroup长度，wrapgroup、btngroup复位
 	self.area_wrapgroup:SetLength(table.count(self.model.area_ids))
 	self.area_wrapgroup:ResetToBeginning()
 end
 
 -- 区域列表Item复用刷新
-local function OnAreaWrapgroupRefresh(self, wrap_component, real_index, check)
+function UILoginServerView:OnAreaWrapgroupRefresh( wrap_component, real_index, check)
 	-- 刷新按钮下的文字
 	local text = wrap_component:GetComponent(area_btn_text_path, UIText)
 	local area_id = self.model.area_ids[real_index + 1]
@@ -81,18 +81,18 @@ local function OnAreaWrapgroupRefresh(self, wrap_component, real_index, check)
 end
 
 -- 区域按钮组点击刷新
-local function OnAreaBtngroupClick(self, wrap_component, toggle_btn, virtual_index, check)
+function UILoginServerView:OnAreaBtngroupClick( wrap_component, toggle_btn, virtual_index, check)
 	if not check then
 		return
 	end
-	
+
 	if virtual_index == recommend_btn_virtual_index then
 		self.server_list = self.model.recommend_servers
 	else
 		local area_id = self.model.area_ids[virtual_index + 1]
 		self.server_list = self.model.area_servers[area_id]
 	end
-	
+
 	-- 区域列表回调：UIWrapGroup建立专门脚本UIServerItem刷新示例
 	local selected_server_index = self:ServerID2ServerIndex(self.selected_server_id)
 	self.svr_wrapgroup:SetLength(table.count(self.server_list))
@@ -101,7 +101,7 @@ local function OnAreaBtngroupClick(self, wrap_component, toggle_btn, virtual_ind
 end
 
 -- server_id转换到server_index
-local function ServerID2ServerIndex(self, server_id)
+function UILoginServerView:ServerID2ServerIndex( server_id)
 	local choose_pairs = table.choose(self.server_list, function(i, v)
 		return v.server_id == server_id
 	end)
@@ -115,15 +115,15 @@ local function ServerID2ServerIndex(self, server_id)
 end
 
 -- 设置选择server
-local function SetSelectedServer(self, server_index)
+function UILoginServerView:SetSelectedServer( server_index)
 	self.selected_server_id = self.server_list[server_index + 1].server_id
 end
 
-UILoginServerView.OnCreate = OnCreate
-UILoginServerView.OnEnable = OnEnable
-UILoginServerView.OnAreaWrapgroupRefresh = OnAreaWrapgroupRefresh
-UILoginServerView.OnAreaBtngroupClick = OnAreaBtngroupClick
-UILoginServerView.ServerID2ServerIndex = ServerID2ServerIndex
-UILoginServerView.SetSelectedServer = SetSelectedServer
+-- UILoginServerView.OnCreate = OnCreate
+-- UILoginServerView.OnEnable = OnEnable
+-- UILoginServerView.OnAreaWrapgroupRefresh = OnAreaWrapgroupRefresh
+-- UILoginServerView.OnAreaBtngroupClick = OnAreaBtngroupClick
+-- UILoginServerView.ServerID2ServerIndex = ServerID2ServerIndex
+-- UILoginServerView.SetSelectedServer = SetSelectedServer
 
 return UILoginServerView

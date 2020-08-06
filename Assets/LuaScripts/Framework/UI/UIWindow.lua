@@ -1,5 +1,4 @@
 --[[
--- added by wsh @ 2017-11-30
 -- UIWindow数据，用以表示一个窗口
 -- 注意：
 -- 1、窗口名字必须和预设名字一致
@@ -23,5 +22,5 @@ local UIWindow = {
 	-- 是否正在加载
 	IsLoading = false,
 }
-	
+
 return DataClass("UIWindow", UIWindow)

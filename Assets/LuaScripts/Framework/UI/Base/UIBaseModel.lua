@@ -1,5 +1,4 @@
 --[[
--- added by wsh @ 2017-11-30
 -- UI模型层基类：该界面相关数据，同时负责消息定制
 -- 注意：
 -- 1、数据大体分为两类：游戏逻辑数据、界面控制数据
@@ -10,10 +9,11 @@
 -- 6、界面Model层数据只影响UI，不影响游戏逻辑，游戏逻辑不能从Model层取数据，意思是没有界面，游戏依旧能跑
 --]]
 
+---@class UIBaseModel
 local UIBaseModel = BaseClass("UIBaseModel")
 
 -- 如非必要，别重写构造函数，使用OnCreate初始化
-local function __init(self, ui_name)
+function UIBaseModel:__init(ui_name)
 	-- 回调管理，使其最长保持和Model等同的生命周期
 	self.__ui_callback = {}
 	self.__data_callback = {}
@@ -22,7 +22,7 @@ local function __init(self, ui_name)
 end
 
 -- 如非必要，别重写析构函数，使用OnDestroy销毁资源
-local function __delete(self)
+function UIBaseModel:__delete()
 	self:OnDestroy()
 	for k,v in pairs(self.__ui_callback) do
 		self:RemoveUIListener(k, v)
@@ -37,40 +37,40 @@ end
 
 -- 创建：变量定义，初始化，消息注册
 -- 注意：窗口生命周期内保持的成员变量放这
-local function OnCreate(self)
+function UIBaseModel:OnCreate()
 end
 
 -- 打开：刷新数据模型
 -- 注意：窗口关闭时可以清理的成员变量放这
-local function OnEnable(self, ...)
+function UIBaseModel:OnEnable(...)
 end
 
 -- 关闭
 -- 注意：必须清理OnEnable中声明的变量
-local function OnDisable(self)
+function UIBaseModel:OnDisable()
 end
 
 -- 销毁
 -- 注意：必须清理OnCreate中声明的变量
-local function OnDestroy(self)
+function UIBaseModel:OnDestroy()
 end
 
 -- 注册消息
-local function OnAddListener(self)
+function UIBaseModel:OnAddListener()
 end
 
 -- 注销消息
-local function OnRemoveListener(self)
+function UIBaseModel:OnRemoveListener()
 end
 
 -- 激活：给UIManager用，别重写
-local function Activate(self, ...)
+function UIBaseModel:Activate(...)
 	self:OnAddListener()
 	self:OnEnable(...)
 end
 
 -- 反激活：给UIManager用，别重写
-local function Deactivate(self)
+function UIBaseModel:Deactivate()
 	self:OnRemoveListener()
 	self:OnDisable()
 end
@@ -90,52 +90,52 @@ local function RemoveCallback(keeper, msg_name, callback)
 end
 
 -- 注册UI数据监听事件，别重写
-local function AddUIListener(self, msg_name, callback)
+function UIBaseModel:AddUIListener( msg_name, callback)
 	local bindFunc = Bind(self, callback)
 	AddCallback(self.__ui_callback, msg_name, bindFunc)
 	UIManager:GetInstance():AddListener(msg_name, bindFunc)
 end
 
 -- 发送UI数据变动事件，别重写
-local function UIBroadcast(self, msg_name, ...)
+function UIBaseModel:UIBroadcast( msg_name, ...)
 	UIManager:GetInstance():Broadcast(msg_name, ...)
 end
 
 -- 注销UI数据监听事件，别重写
-local function RemoveUIListener(self, msg_name, callback)
+function UIBaseModel:RemoveUIListener( msg_name, callback)
 	local bindFunc = GetCallback(self.__ui_callback, msg_name)
 	RemoveCallback(self.__ui_callback, msg_name, bindFunc)
 	UIManager:GetInstance():RemoveListener(msg_name, bindFunc)
 end
 
 -- 注册游戏数据监听事件，别重写
-local function AddDataListener(self, msg_name, callback)
+function UIBaseModel:AddDataListener( msg_name, callback)
 	local bindFunc = Bind(self, callback)
 	AddCallback(self.__data_callback, msg_name, bindFunc)
 	DataManager:GetInstance():AddListener(msg_name, bindFunc)
 end
 
 -- 注销游戏数据监听事件，别重写
-local function RemoveDataListener(self, msg_name, callback)
+function UIBaseModel:RemoveDataListener( msg_name, callback)
 	local bindFunc = GetCallback(self.__data_callback, msg_name)
 	RemoveCallback(self.__data_callback, msg_name, bindFunc)
 	DataManager:GetInstance():RemoveListener(msg_name, bindFunc)
 end
 
-UIBaseModel.__init = __init
-UIBaseModel.__delete = __delete
-UIBaseModel.OnCreate = OnCreate
-UIBaseModel.OnEnable = OnEnable
-UIBaseModel.OnDisable = OnDisable
-UIBaseModel.OnDestroy = OnDestroy
-UIBaseModel.OnAddListener = OnAddListener
-UIBaseModel.OnRemoveListener = OnRemoveListener
-UIBaseModel.Activate = Activate
-UIBaseModel.Deactivate = Deactivate
-UIBaseModel.AddUIListener = AddUIListener
-UIBaseModel.UIBroadcast = UIBroadcast
-UIBaseModel.RemoveUIListener = RemoveUIListener
-UIBaseModel.AddDataListener = AddDataListener
-UIBaseModel.RemoveDataListener = RemoveDataListener
+-- UIBaseModel.__init = __init
+-- UIBaseModel.__delete = __delete
+-- UIBaseModel.OnCreate = OnCreate
+-- UIBaseModel.OnEnable = OnEnable
+-- UIBaseModel.OnDisable = OnDisable
+-- UIBaseModel.OnDestroy = OnDestroy
+-- UIBaseModel.OnAddListener = OnAddListener
+-- UIBaseModel.OnRemoveListener = OnRemoveListener
+-- UIBaseModel.Activate = Activate
+-- UIBaseModel.Deactivate = Deactivate
+-- UIBaseModel.AddUIListener = AddUIListener
+-- UIBaseModel.UIBroadcast = UIBroadcast
+-- UIBaseModel.RemoveUIListener = RemoveUIListener
+-- UIBaseModel.AddDataListener = AddDataListener
+-- UIBaseModel.RemoveDataListener = RemoveDataListener
 
 return UIBaseModel

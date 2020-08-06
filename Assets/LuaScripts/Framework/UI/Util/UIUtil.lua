@@ -1,8 +1,8 @@
 --[[
--- added by wsh @ 2017-12-03
 -- UI工具类
 --]]
 
+---@class UIUtil
 local UIUtil = {}
 
 local function GetChild(trans, index)

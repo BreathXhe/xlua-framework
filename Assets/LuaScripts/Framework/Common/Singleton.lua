@@ -1,5 +1,4 @@
 --[[
--- added by wsh @ 2017-12-05
 -- 单例类
 --]]
 
@@ -36,6 +35,6 @@ Singleton.__init = __init
 Singleton.__delete = __delete
 Singleton.Startup = Startup
 Singleton.GetInstance = GetInstance
-Singleton.Destory = Destory
+
 
 return Singleton;

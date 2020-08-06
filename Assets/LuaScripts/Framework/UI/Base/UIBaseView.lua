@@ -1,5 +1,4 @@
 --[[
--- added by wsh @ 2017-11-30
 -- UI视图层基类：该界面所有UI刷新操作，只和展示相关的数据放在这，只有操作相关数据放Model去
 -- 注意：
 -- 1、被动刷新：所有界面刷新通过消息驱动---除了打开界面时的刷新
@@ -9,6 +8,7 @@
 -- 5、任何情况下不要在游戏逻辑代码操作界面刷新---除了打开、关闭界面
 --]]
 
+---@class UIBaseView:UIBaseContainer
 local UIBaseView = BaseClass("UIBaseView", UIBaseContainer)
 local base = UIBaseContainer
 
@@ -26,10 +26,10 @@ local function __init(self, holder, var_arg, model, ctrl)
 				error("You can't write model derectly!", 2)
 			end
 		})
-	else 
+	else
 		self.model = model
 	end
-	
+
 	-- 窗口画布
 	self.canvas = nil
 	-- 窗口基础order，窗口内添加的其它canvas设置的order都以它做偏移

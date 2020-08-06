@@ -1,19 +1,19 @@
 --[[
--- added by wsh @ 2017-12-01
 -- UILoginServerModel模型层
 --]]
 
+---@class UILoginServerModel:UIBaseModel
 local UILoginServerModel = BaseClass("UILoginServerModel", UIBaseModel)
 local base = UIBaseModel
 
 -- 创建
-local function OnCreate(self)
+function UILoginServerModel:OnCreate()
 	base.OnCreate(self)
 	-- 窗口生命周期内保持的成员变量放这
 end
 
 -- 打开
-local function OnEnable(self)
+function UILoginServerModel:OnEnable()
 	base.OnEnable(self)
 	-- 窗口关闭时可以清理的成员变量放这
 	-- 推荐服务器列表
@@ -24,7 +24,7 @@ local function OnEnable(self)
 	self.area_servers = nil
 	-- 当前选择的登陆服务器
 	self.selected_server_id = 0
-	
+
 	self:OnRefresh()
 end
 
@@ -70,7 +70,7 @@ local function FetchAreaList(servers)
 	return area_ids, area_servers
 end
 
-local function OnRefresh(self)
+function UILoginServerModel:OnRefresh()
 	local server_data = ServerData:GetInstance()
 	self.recommend_servers = FetchRecommendList(server_data.servers)
 	self.area_ids, self.area_servers = FetchAreaList(server_data.servers)
@@ -81,18 +81,18 @@ local function OnServerListChg(self)
 	self:OnRefresh()
 end
 
-local function OnAddListener(self)
+function UILoginServerModel:OnAddListener()
 	base.OnAddListener(self)
 	self:AddDataListener(DataMessageNames.ON_SERVER_LIST_CHG, OnServerListChg)
 end
 
-local function OnRemoveListener(self)
+function UILoginServerModel:OnRemoveListener()
 	base.OnRemoveListener(self)
 	self:RemoveDataListener(DataMessageNames.ON_SERVER_LIST_CHG, OnServerListChg)
 end
 
 -- 关闭
-local function OnDisable(self)
+function UILoginServerModel:OnDisable()
 	base.OnDisable(self)
 	-- 清理成员变量
 	self.recommend_servers = nil
@@ -102,17 +102,17 @@ local function OnDisable(self)
 end
 
 -- 销毁
-local function OnDistroy(self)
+function UILoginServerModel:OnDistroy()
 	base.OnDistroy(self)
 	-- 清理成员变量
 end
 
-UILoginServerModel.OnCreate = OnCreate
-UILoginServerModel.OnEnable = OnEnable
-UILoginServerModel.OnRefresh = OnRefresh
-UILoginServerModel.OnAddListener = OnAddListener
-UILoginServerModel.OnRemoveListener = OnRemoveListener
-UILoginServerModel.OnDisable = OnDisable
-UILoginServerModel.OnDistroy = OnDistroy
+-- UILoginServerModel.OnCreate = OnCreate
+-- UILoginServerModel.OnEnable = OnEnable
+-- UILoginServerModel.OnRefresh = OnRefresh
+-- UILoginServerModel.OnAddListener = OnAddListener
+-- UILoginServerModel.OnRemoveListener = OnRemoveListener
+-- UILoginServerModel.OnDisable = OnDisable
+-- UILoginServerModel.OnDistroy = OnDistroy
 
 return UILoginServerModel

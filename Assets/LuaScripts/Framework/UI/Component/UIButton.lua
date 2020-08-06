@@ -1,5 +1,4 @@
 --[[
--- added by wsh @ 2017-12-08
 -- Lua侧UIButton
 -- 注意：
 -- 1、按钮一般会带有其他的组件，如带一个UIText、或者一个UIImange标识说明按钮功能，所以这里是一个容器类
@@ -18,7 +17,7 @@ local function OnCreate(self, relative_path)
 	self.unity_uibutton = UIUtil.FindButton(self.transform, relative_path)
 	-- 记录点击回调
 	self.__onclick = nil
-	
+
 	if IsNull(self.unity_uibutton) and IsNull(self.gameObject) then
 		self.gameObject = self.unity_uibutton.gameObject
 		self.transform = self.unity_uibutton.transform

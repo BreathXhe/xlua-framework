@@ -1,5 +1,4 @@
 --[[
--- added by wsh @ 2017-12-01
 -- 数据结构类：不可写、读不存在的域：避免访问错误，访问控制仅在调试模式下生效
 -- 注意：
 -- 1、必须初始化，没有默认值的概念（和CS结构体一样）
@@ -27,7 +26,7 @@ local DataNewindex = function(mt, key, value)
 	if mt[key] == nil then
 		error(mt.__cname.." write err: No key named : "..key.."\n"..table.dump(mt), 2)
 	end
-	
+
 	if value then
 		rawset(mt, key, value)
 	else
@@ -43,16 +42,16 @@ function DataClass(classname, data_tb, super)
     else
         cls = {}
     end
-	
+
 	if data_tb then
 		for i,v in pairs(data_tb) do
 			cls[i] = v
 		end
 	end
-	
+
 	cls.super = super
     cls.__cname = classname
-	
+
     function cls.New(...)
 		local data = DeepCopy(cls)
 		local ret_data
@@ -69,7 +68,7 @@ function DataClass(classname, data_tb, super)
 		else
 			ret_data = setmetatable(data, data)
 		end
-		
+
 		-- 调用初始化方法
 		do
 			local args = {...}
@@ -82,13 +81,13 @@ function DataClass(classname, data_tb, super)
 					c.__init(ret_data, ...)
 				end
 			end
-			
+
 			if #args > 0 then
 				create(cls, ...)
 			end
 		end
 		return ret_data
     end
-	
+
     return cls
 end

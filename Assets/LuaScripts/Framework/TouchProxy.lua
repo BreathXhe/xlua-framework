@@ -32,8 +32,9 @@
 --]]
 
 local Object = require "Framework.Object";
-TouchProxy = Class("TouchProxy", Object);
-local M = TouchProxy;
+---@class TouchProxy
+local TouchProxy = Class("TouchProxy", Object);
+-- local M = TouchProxy;
 
 TouchType = {
 	Down = 0;
@@ -59,12 +60,12 @@ local dragEndEventMaps = {};
 local uiPressMaps = {};
 local uiClickMaps = {};
 
-function M:Ctor()
+function TouchProxy:Ctor()
 	self.lastClickPosition = Vector2.zero;
 end
 
 --c#调用
-function M.SetTouch(touch)
+function TouchProxy.SetTouch(touch)
 	touchCS = touch;
 	if mainCamera and uguiCamera then
 		touchCS.SetCamera(mainCamera);
@@ -72,14 +73,14 @@ function M.SetTouch(touch)
 end
 
 --Lua调用
-function M.SetCamera(camera)
+function TouchProxy.SetCamera(camera)
 	mainCamera = camera;
 	if touchCS then
 		touchCS:SetCamera(camera);
 	end
 end
 
-function M.GetLastClickPosition()
+function TouchProxy.GetLastClickPosition()
 	return TouchProxy.lastClickPosition;
 end
 
@@ -92,7 +93,7 @@ end
 	event		--监听的事件类型
 	callBack 	--触发函数
 --]]
-function M.RegisterEvent(listener, event, callBack)
+function TouchProxy.RegisterEvent(listener, event, callBack)
 	local key = tostring(listener);
 	local list = {};
 	list.callBack = callBack;
@@ -120,7 +121,7 @@ end
 	listener 	--监听者
 	event		--监听的事件类型
 --]]
-function M.UnregisterEvent(listener, event)
+function TouchProxy.UnregisterEvent(listener, event)
 	local key = tostring(listener);
 	if event == TouchType.Down then
 		if downEventMaps[key] then
@@ -169,7 +170,7 @@ end
 	@param loop     	--是否循环
 	@param useFrame     --是否使用帧数
 --]]
-function M.RegisterUIPress(target, callBack, data, delay, loop, useFrame)
+function TouchProxy.RegisterUIPress(target, callBack, data, delay, loop, useFrame)
 	if not target or not target.gameObject then
 		if error then error("Register ui press timer need a gameObject as target") end
 		return
@@ -199,7 +200,7 @@ end
 --[[
 	UI注销长按
 --]]
-function M.UnregisterUIPress(target)
+function TouchProxy.UnregisterUIPress(target)
 	if not target or not target.gameObject then 
 		if error then error("Unregister ui press timer need a gameObject as target, Please your RegisterPressTimer function.") end
 		return
@@ -223,7 +224,7 @@ end
 	@param callBack     --回调方法
 	@param data         --回传参数
 --]]
-function M.RegisterUIClick(target, callBack, data)
+function TouchProxy.RegisterUIClick(target, callBack, data)
 	if not target or not target.gameObject then 
 		if error then error("Unregister ui click need a gameObject as target, Please your RegisterPressTimer function.") end
 		return
@@ -244,7 +245,7 @@ end
 --[[
 	UI注销点击
 --]]
-function M.UnregisterUIClick(target)
+function TouchProxy.UnregisterUIClick(target)
 	if not target or not target.gameObject then 
 		if error then error("Unregister ui click need a gameObject as target, Please your RegisterPressTimer function.") end
 		return
@@ -260,7 +261,7 @@ end
 ----------------------------------------------  触发事件  ---------------------------------------------
 -------------------------------------------------------------------------------------------------------
 
-function M.OnTouchDown(eventData)
+function TouchProxy.OnTouchDown(eventData)
 	TouchProxy.lastClickPosition = eventData.Position;
 	
 	for k,v in pairs(downEventMaps) do
@@ -268,13 +269,13 @@ function M.OnTouchDown(eventData)
 	end
 end
 
-function M.OnTouchUp(eventData)
+function TouchProxy.OnTouchUp(eventData)
 	for k,v in pairs(upEventMaps) do
 		v.callBack(eventData, v.listener);
 	end
 end
 
-function M.OnTouchClick(eventData)
+function TouchProxy.OnTouchClick(eventData)
 	for k,v in pairs(clickEventMaps) do
 		v.callBack(eventData, v.listener);
 	end
@@ -295,7 +296,7 @@ function M.OnTouchClick(eventData)
 	UIManager:GetInstance():CheckComponentClick(eventData.Position);
 end
 
-function M.OnTouchPress(eventData)
+function TouchProxy.OnTouchPress(eventData)
 	for k,v in pairs(pressEventMaps) do
 		v.callBack(eventData, v.listener);
 	end
@@ -317,7 +318,7 @@ function M.OnTouchPress(eventData)
 	end
 end
 
-function M.OnTouchPressEnd(eventData)
+function TouchProxy.OnTouchPressEnd(eventData)
 	if eventData.CurrentSelectedGameObject then
 		local key = eventData.CurrentSelectedGameObject:GetInstanceID();
 		if uiPressMaps and uiPressMaps[key] and uiPressMaps[key].timer then
@@ -326,22 +327,22 @@ function M.OnTouchPressEnd(eventData)
 	end
 end
 
-function M.OnTouchDrag(eventData)
+function TouchProxy.OnTouchDrag(eventData)
 	for k,v in pairs(dragEventMaps) do
 		v.callBack(eventData, v.listener);
 	end
 end
 
-function M.OnTouchDragBegin(eventData)
+function TouchProxy.OnTouchDragBegin(eventData)
 	for k,v in pairs(dragBeginEventMaps) do
 		v.callBack(eventData, v.listener);
 	end
 end
 
-function M.OnTouchDragEnd(eventData)
+function TouchProxy.OnTouchDragEnd(eventData)
 	for k,v in pairs(dragEndEventMaps) do
 		v.callBack(eventData, v.listener);
 	end
 end
 
-return M;
+return TouchProxy;

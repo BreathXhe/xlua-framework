@@ -1,8 +1,8 @@
 --[[
--- added by wsh @ 2017-12-01
 -- UILogin控制层
 --]]
 
+---@class UILoginCtrl:UIBaseCtrl
 local UILoginCtrl = BaseClass("UILoginCtrl", UIBaseCtrl)
 local MsgIDMap = require "Net.Config.MsgIDMap"
 local MsgIDDefine = require "Net.Config.MsgIDDefine"
@@ -12,7 +12,7 @@ local function OnConnect(self, sender, result, msg)
 		Logger.LogError("Connect err : "..msg)
 		return
 	end
-	
+
 	-- TODO：
 	local msd_id = MsgIDDefine.LOGIN_REQ_GET_UID
     local msg = (MsgIDMap[msd_id])()
@@ -39,7 +39,7 @@ local function ConnectServer(self)
 	HallConnector:GetInstance():Connect("192.168.1.245", 10020, Bind(self, OnConnect), Bind(self, OnClose))
 end
 
-local function LoginServer(self, name, password)
+function UILoginCtrl:LoginServer( name, password)
 	-- 合法性检验
 	if string.len(name) > 20 or string.len(name) < 1 then
 		-- TODO：错误弹窗
@@ -60,19 +60,19 @@ local function LoginServer(self, name, password)
 	        return;
 	    end;
 	end
-	
+
 	ClientData:GetInstance():SetAccountInfo(name, password)
-	
+
 	-- TODO
 	--ConnectServer(self)
 	SceneManager:GetInstance():SwitchScene(SceneConfig.HomeScene)
 end
 
-local function ChooseServer(self)
+function UILoginCtrl:ChooseServer()
 	UIManager:GetInstance():OpenWindow(UIWindowNames.UILoginServer)
 end
 
-UILoginCtrl.LoginServer = LoginServer
-UILoginCtrl.ChooseServer = ChooseServer
+-- UILoginCtrl.LoginServer = LoginServer
+-- UILoginCtrl.ChooseServer = ChooseServer
 
 return UILoginCtrl

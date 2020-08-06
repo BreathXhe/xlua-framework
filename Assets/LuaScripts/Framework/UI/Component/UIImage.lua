@@ -1,5 +1,4 @@
 --[[
--- added by wsh @ 2017-12-08
 -- Lua侧UIImage
 -- 使用方式：
 -- self.xxx_img = self:AddComponent(UIImage, var_arg)--添加孩子，各种重载方式查看UIBaseContainer

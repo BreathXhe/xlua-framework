@@ -7,13 +7,14 @@
 --]]
 
 local Messenger = require "Framework.Common.Messenger"
+---@class UpdateManager
 local UpdateManager = BaseClass("UpdateManager", Singleton)
 local UpdateMsgName = "Update"
 local LateUpdateMsgName = "LateUpdateMsgName"
 local FixedUpdateMsgName = "FixedUpdateMsgName"
 
 -- 构造函数
-local function __init(self)
+function UpdateManager:__init()
 	-- 成员变量
 	-- 消息中心
 	self.ui_message_center = Messenger.New()
@@ -23,6 +24,10 @@ local function __init(self)
 	self.__lateupdate_handle = nil
 	-- FixedUpdate
 	self.__fixedupdate_handle = nil
+end
+
+function UpdateManager:GetInstance()
+	return Singleton.GetInstance(self)
 end
 
 -- Update回调
@@ -41,7 +46,7 @@ local function FixedUpdateHandle(self)
 end
 
 -- 启动
-local function Startup(self)
+function UpdateManager:Startup()
 	self:Dispose()
 	self.__update_handle = UpdateBeat:CreateListener(UpdateHandle, UpdateManager:GetInstance())
 	self.__lateupdate_handle = LateUpdateBeat:CreateListener(LateUpdateHandle, UpdateManager:GetInstance())
@@ -52,7 +57,7 @@ local function Startup(self)
 end
 
 -- 释放
-local function Dispose(self)
+function UpdateManager:Dispose()
 	if self.__update_handle ~= nil then
 		UpdateBeat:RemoveListener(self.__update_handle)
 		self.__update_handle = nil
@@ -68,54 +73,54 @@ local function Dispose(self)
 end
 
 -- 清理：消息系统不需要强行清理
-local function Cleanup(self)
+function UpdateManager:Cleanup()
 end
 
 -- 添加Update更新
-local function AddUpdate(self, e_listener)
+function UpdateManager:AddUpdate( e_listener)
 	self.ui_message_center:AddListener(UpdateMsgName, e_listener)
 end
 
 -- 添加LateUpdate更新
-local function AddLateUpdate(self, e_listener)
+function UpdateManager:AddLateUpdate( e_listener)
 	self.ui_message_center:AddListener(LateUpdateMsgName, e_listener)
 end
 
 -- 添加FixedUpdate更新
-local function AddFixedUpdate(self, e_listener)
+function UpdateManager:AddFixedUpdate( e_listener)
 	self.ui_message_center:AddListener(FixedUpdateMsgName, e_listener)
 end
 
 -- 移除Update更新
-local function RemoveUpdate(self, e_listener)
+function UpdateManager:RemoveUpdate( e_listener)
 	self.ui_message_center:RemoveListener(UpdateMsgName, e_listener)
 end
 
 -- 移除LateUpdate更新
-local function RemoveLateUpdate(self, e_listener)
+function UpdateManager:RemoveLateUpdate( e_listener)
 	self.ui_message_center:RemoveListener(LateUpdateMsgName, e_listener)
 end
 
 -- 移除FixedUpdate更新
-local function RemoveFixedUpdate(self, e_listener)
+function UpdateManager:RemoveFixedUpdate( e_listener)
 	self.ui_message_center:RemoveListener(FixedUpdateMsgName, e_listener)
 end
 
 -- 析构函数
-local function __delete(self)
+function UpdateManager:__delete()
 	self:Cleanup()
 	self.ui_message_center = nil
 end
 
-UpdateManager.__init = __init
-UpdateManager.Startup = Startup
-UpdateManager.Dispose = Dispose
-UpdateManager.Cleanup = Cleanup
-UpdateManager.AddUpdate = AddUpdate
-UpdateManager.AddLateUpdate = AddLateUpdate
-UpdateManager.AddFixedUpdate = AddFixedUpdate
-UpdateManager.RemoveUpdate = RemoveUpdate
-UpdateManager.RemoveLateUpdate = RemoveLateUpdate
-UpdateManager.RemoveFixedUpdate = RemoveFixedUpdate
-UpdateManager.__delete = __delete
+-- UpdateManager.__init = __init
+-- UpdateManager.Startup = Startup
+-- UpdateManager.Dispose = Dispose
+-- UpdateManager.Cleanup = Cleanup
+-- UpdateManager.AddUpdate = AddUpdate
+-- UpdateManager.AddLateUpdate = AddLateUpdate
+-- UpdateManager.AddFixedUpdate = AddFixedUpdate
+-- UpdateManager.RemoveUpdate = RemoveUpdate
+-- UpdateManager.RemoveLateUpdate = RemoveLateUpdate
+-- UpdateManager.RemoveFixedUpdate = RemoveFixedUpdate
+-- UpdateManager.__delete = __delete
 return UpdateManager;

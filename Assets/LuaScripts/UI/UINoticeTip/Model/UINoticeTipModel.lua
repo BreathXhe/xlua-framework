@@ -1,13 +1,13 @@
 --[[
--- added by wsh @ 2017-12-18
 -- UILNoticeTip模型层
 --]]
 
+---@class UILNoticeTip:UIBaseModel
 local UILNoticeTip = BaseClass("UILNoticeTip", UIBaseModel)
 local base = UIBaseModel
 
 -- 创建
-local function OnCreate(self)
+function UILNoticeTip:OnCreate()
 	base.OnCreate(self)
 	-- 保持Model
 	UIManager:GetInstance():SetKeepModel(self.__ui_name, true)
@@ -16,7 +16,7 @@ local function OnCreate(self)
 end
 
 -- 打开
-local function OnEnable(self, cs_func, ...)
+function UILNoticeTip:OnEnable( cs_func, ...)
 	base.OnEnable(self)
 	-- 对应的CS脚本函数
 	self.cs_func = cs_func
@@ -27,7 +27,7 @@ local function OnEnable(self, cs_func, ...)
 end
 
 -- 等待响应
-local function WaitForResponse(self)
+function UILNoticeTip:WaitForResponse()
 	self.__co = coroutine.running()
 	coroutine.waitforasyncop(self.cs_obj)
 	self.__co = nil
@@ -35,7 +35,7 @@ local function WaitForResponse(self)
 end
 
 -- 关闭
-local function OnDisable(self)
+function UILNoticeTip:OnDisable()
 	base.OnDisable(self)
 	if self.__co then
 		-- 被关闭时不能让协程卡住
@@ -46,9 +46,9 @@ local function OnDisable(self)
 	self.__co = nil
 end
 
-UILNoticeTip.OnCreate = OnCreate
-UILNoticeTip.OnEnable = OnEnable
-UILNoticeTip.WaitForResponse = WaitForResponse
-UILNoticeTip.OnDisable = OnDisable
+-- UILNoticeTip.OnCreate = OnCreate
+-- UILNoticeTip.OnEnable = OnEnable
+-- UILNoticeTip.WaitForResponse = WaitForResponse
+-- UILNoticeTip.OnDisable = OnDisable
 
 return UILNoticeTip

@@ -1,5 +1,4 @@
 --[[
--- added by wsh @ 2017-12-01
 -- UILogin视图层
 -- 注意：
 -- 1、成员变量最好预先在__init函数声明，提高代码可读性
@@ -7,6 +6,7 @@
 -- 3、组件命名参考代码规范
 --]]
 
+---@class UILoginView:UIBaseView
 local UILoginView = BaseClass("UILoginView", UIBaseView)
 local base = UIBaseView
 
@@ -41,7 +41,7 @@ local function ClickOnLoginBtn(self)
 	self.ctrl:LoginServer(name, password)
 end
 
-local function OnCreate(self)
+function UILoginView:OnCreate()
 	base.OnCreate(self)
 	-- 初始化各个组件
 	self.app_version_text = self:AddComponent(UIText, app_version_text_path)
@@ -58,7 +58,7 @@ local function OnCreate(self)
 	end)
 	-- 使用方式二：私有函数、成员函数绑定
 	self.login_btn:SetOnClick(self, ClickOnLoginBtn)
-	
+
 	-- 以下为UI特效层级测试代码
 	local effect1_config = EffectConfig.UIPetRankYellow
 	local effect2_config = EffectConfig.UITaskFinish
@@ -76,7 +76,7 @@ local function OnCreate(self)
 	self:AddComponent(UICanvas, test_bottom_canvas_path, 1)
 	self:AddComponent(UICanvas, test_uieffect2_path, 3)
 	self:AddComponent(UICanvas, test_top_canvas_path, 5)
-	
+
 	-- 以下为计时器、更新函数、协程的测试代码
 	self.timer_value = 0
 	self.update_value = 0
@@ -106,13 +106,13 @@ local function OnCreate(self)
 	end)
 end
 
-local function OnEnable(self)
+function UILoginView:OnEnable()
 	base.OnEnable(self)
 	self:OnRefresh()
 end
 
 -- Update测试
-local function Update(self)
+function UILoginView:Update()
 	self.update_value = self.update_value + Time.deltaTime
 	self.test_updater_text:SetText(tostring(string.format("%.3f", self.update_value)))
 end
@@ -121,7 +121,7 @@ local function OnRefreshServerInfo(self)
 	self.server_text:SetText(self.model.area_name.." "..self.model.server_name)
 end
 
-local function OnRefresh(self)
+function UILoginView:OnRefresh()
 	-- 各组件刷新
 	self.app_version_text:SetText("游戏版本号："..self.model.client_app_ver)
 	self.res_version_text:SetText("资源版本号："..self.model.client_res_ver)
@@ -131,19 +131,19 @@ local function OnRefresh(self)
 end
 
 
-local function OnAddListener(self)
+function UILoginView:OnAddListener()
 	base.OnAddListener(self)
 	-- UI消息注册
 	self:AddUIListener(UIMessageNames.UILOGIN_ON_SELECTED_SVR_CHG, OnRefreshServerInfo)
 end
 
-local function OnRemoveListener(self)
+function UILoginView:OnRemoveListener()
 	base.OnRemoveListener(self)
 	-- UI消息注销
 	self:RemoveUIListener(UIMessageNames.UILOGIN_ON_SELECTED_SVR_CHG, OnRefreshServerInfo)
 end
 
-local function OnDestroy(self)
+function UILoginView:OnDestroy()
 	self.app_version_text = nil
 	self.res_version_text = nil
 	self.server_text = nil
@@ -156,12 +156,12 @@ local function OnDestroy(self)
 	base.OnDestroy(self)
 end
 
-UILoginView.OnCreate = OnCreate
-UILoginView.OnEnable = OnEnable
-UILoginView.Update = Update
-UILoginView.OnRefresh = OnRefresh
-UILoginView.OnAddListener = OnAddListener
-UILoginView.OnRemoveListener = OnRemoveListener
-UILoginView.OnDestroy = OnDestroy
+-- UILoginView.OnCreate = OnCreate
+-- UILoginView.OnEnable = OnEnable
+-- UILoginView.Update = Update
+-- UILoginView.OnRefresh = OnRefresh
+-- UILoginView.OnAddListener = OnAddListener
+-- UILoginView.OnRemoveListener = OnRemoveListener
+-- UILoginView.OnDestroy = OnDestroy
 
 return UILoginView

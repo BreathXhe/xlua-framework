@@ -1,11 +1,11 @@
 --[[
--- added by wsh @ 2017-12-01
 -- UILoginServerCtrl控制层
 --]]
 
+---@class UILoginServerCtrl:UIBaseCtrl
 local UILoginServerCtrl = BaseClass("UILoginServerCtrl", UIBaseCtrl)
 
-local function SetSelectedServer(self, svr_id)
+function UILoginServerCtrl:SetSelectedServer(svr_id)
 	-- 合法性校验
 	if svr_id == nil then
 		-- TODO：错误弹窗
@@ -21,11 +21,11 @@ local function SetSelectedServer(self, svr_id)
 	ClientData:GetInstance():SetLoginServerID(svr_id)
 end
 
-local function CloseSelf(self)
+function UILoginServerCtrl:CloseSelf()
 	UIManager:GetInstance():CloseWindow(UIWindowNames.UILoginServer)
 end
 
-UILoginServerCtrl.SetSelectedServer = SetSelectedServer
-UILoginServerCtrl.CloseSelf = CloseSelf
+-- UILoginServerCtrl.SetSelectedServer = SetSelectedServer
+-- UILoginServerCtrl.CloseSelf = CloseSelf
 
 return UILoginServerCtrl

@@ -1,14 +1,14 @@
 --[[
--- added by wsh @ 2018-02-26
 -- UIBattleMain控制层
 --]]
 
+---@class UIBattleMainCtrl:UIBaseCtrl
 local UIBattleMainCtrl = BaseClass("UIBattleMainCtrl", UIBaseCtrl)
 
-local function Back(self)
+function UIBattleMainCtrl:Back()
 	SceneManager:GetInstance():SwitchScene(SceneConfig.HomeScene)
 end
 
-UIBattleMainCtrl.Back = Back
+-- UIBattleMainCtrl.Back = Back
 
 return UIBattleMainCtrl

@@ -1,5 +1,4 @@
 --[[
--- added by wsh @ 2017-11-28
 -- 消息系统
 -- 使用范例：
 -- local Messenger = require "Framework.Common.Messenger";
@@ -15,40 +14,41 @@
 -- 3、换句话说：广播发出，回调一定会被调用，但回调参数中的实例对象，可能已经被销毁，所以回调函数一定要注意判空
 --]]
 
+---@class Messenger
 local Messenger = BaseClass("Messenger");
 
-local function __init(self)
+function Messenger:__init()
 	self.events = {}
 end
 
-local function __delete(self)
-	self.events = nil	
+function Messenger:__delete()
+	self.events = nil
 	self.error_handle = nil
 end
 
-local function AddListener(self, e_type, e_listener, ...)
+function Messenger:AddListener(e_type, e_listener, ...)
 	local event = self.events[e_type]
 	if event == nil then
 		event = setmetatable({}, {__mode = "k"})
 	end
-	
+
 	for k, v in pairs(event) do
 		if k == e_listener then
 			error("Aready cotains listener : "..tostring(e_listener))
 			return
 		end
 	end
-	
+
 	event[e_listener] = setmetatable(SafePack(...), {__mode = "kv"}) 
 	self.events[e_type] = event;
 end
 
-local function Broadcast(self, e_type, ...)
+function Messenger:Broadcast(e_type, ...)
 	local event = self.events[e_type]
 	if event == nil then
 		return
 	end
-	
+
 	for k, v in pairs(event) do
 		assert(k ~= nil)
 		local args = ConcatSafePack(v, SafePack(...))
@@ -56,7 +56,7 @@ local function Broadcast(self, e_type, ...)
 	end
 end
 
-local function RemoveListener(self, e_type, e_listener)
+function Messenger:RemoveListener( e_type, e_listener)
 	local event = self.events[e_type]
 	if event == nil then
 		return
@@ -65,20 +65,12 @@ local function RemoveListener(self, e_type, e_listener)
 	event[e_listener] = nil
 end
 
-local function RemoveListenerByType(self, e_type)
+function Messenger:RemoveListenerByType( e_type)
 	self.events[e_type] = nil
 end
 
-local function Cleanup(self)
+function Messenger:Cleanup()
 	self.events = {};
 end
-
-Messenger.__init = __init
-Messenger.__delete = __delete
-Messenger.AddListener = AddListener
-Messenger.Broadcast = Broadcast
-Messenger.RemoveListener = RemoveListener
-Messenger.RemoveListenerByType = RemoveListenerByType
-Messenger.Cleanup = Cleanup
 
 return Messenger;

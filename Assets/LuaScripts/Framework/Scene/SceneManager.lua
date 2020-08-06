@@ -1,15 +1,15 @@
 --[[
--- added by wsh @ 2017-12-15
 -- 场景管理系统：调度和控制场景异步加载以及进度管理，展示loading界面和更新进度条数据，GC、卸载未使用资源等
 -- 注意：
 -- 1、资源预加载放各个场景类中自行控制
 -- 2、场景loading的UI窗口这里统一管理，由于这个窗口很简单，更新进度数据时直接写Model层
 --]]
 
+---@class SceneManager
 local SceneManager = BaseClass("SceneManager", Singleton)
 
 -- 构造函数
-local function __init(self)
+function SceneManager:__init()
 	-- 成员变量
 	-- 当前场景
 	self.current_scene = nil
@@ -17,6 +17,11 @@ local function __init(self)
 	self.busing = false
 	-- 场景对象
 	self.scenes = {}
+end
+
+---@return SceneManager
+function SceneManager:GetInstance()
+    return Singleton.GetInstance(self)
 end
 
 -- 切换场景：内部使用协程
@@ -104,29 +109,28 @@ local function CoInnerSwitchScene(self, scene_config)
 end
 
 -- 切换场景
-local function SwitchScene(self, scene_config)
+function SceneManager:SwitchScene(scene_config)
+
+	Logger.Log(string.format('SceneManager:SwitchScene scene_config name %s',scene_config.Name))
+
 	assert(scene_config ~= LaunchScene and scene_config ~= LoadingScene)
 	assert(scene_config.Type ~= nil)
-	if self.busing then 
+	if self.busing then
 		return
 	end
 	if self.current_scene and self.current_scene.scene_config.Name == scene_config.Name then
 		return
 	end
-	
+
 	self.busing = true
 	coroutine.start(CoInnerSwitchScene, self, scene_config)
 end
 
 -- 析构函数
-local function __delete(self)
+function SceneManager:__delete()
 	for _, scene in pairs(self.scenes) do
 		scene:Delete()
 	end
 end
-
-SceneManager.__init = __init
-SceneManager.SwitchScene = SwitchScene
-SceneManager.__delete = __delete
 
 return SceneManager;

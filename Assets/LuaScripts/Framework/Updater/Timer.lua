@@ -1,15 +1,15 @@
 --[[
--- added by wsh @ 2017-12-18
 -- 定时器
 -- 注意：
 -- 1、定时器需要暂停使用pause、恢复使用resume
 -- 2、定时器使用stop停止，一旦停止逻辑层脚本就应该将引用置空，因为它随后会被管理类回收，引用已经不再正确
 --]]
 
+---@class Timer
 local Timer = BaseClass("Timer")
 
 -- 构造函数
-local function __init(self, delay, func, obj, one_shot, use_frame, unscaled)
+function Timer:__init( delay, func, obj, one_shot, use_frame, unscaled)
 	-- 成员变量
 	-- weak表，保证定时器不影响目标对象的回收
 	self.target = setmetatable({}, {__mode = "v"})
@@ -19,7 +19,7 @@ local function __init(self, delay, func, obj, one_shot, use_frame, unscaled)
 end
 
 -- Init
-local function Init(self, delay, func, obj, one_shot, use_frame, unscaled)
+function Timer:Init( delay, func, obj, one_shot, use_frame, unscaled)
 	assert(type(delay) == "number" and delay >= 0)
 	assert(func ~= nil)
 	-- 时长，秒或者帧
@@ -47,11 +47,11 @@ local function Init(self, delay, func, obj, one_shot, use_frame, unscaled)
 end
 
 -- Update
-local function Update(self, is_fixed)
+function Timer:Update( is_fixed)
 	if not self.started or self.over then
 		return
 	end
-	
+
 	local timeup = false
 	if self.use_frame then
 		-- TODO：这里有个经常会落后一帧的问题，一般出现在协程当中--当协程启用另外的协程时
@@ -67,7 +67,7 @@ local function Update(self, is_fixed)
 		self.left = self.left - delta
 		timeup = (self.left <= 0)
 	end
-	
+
 	if timeup then
 		if self.target.func ~= nil then
 			-- 说明：这里一定要先改状态，后回调
@@ -100,7 +100,7 @@ local function Update(self, is_fixed)
 end
 
 -- 启动计时
-local function Start(self)
+function Timer:Start()
 	if self.over then
 		Logger.LogError("You can't start a overed timer, try add a new one!")
 	end
@@ -112,17 +112,17 @@ local function Start(self)
 end
 
 -- 暂停计时
-local function Pause(self)
+function Timer:Pause()
 	self.started = false
 end
 
 -- 恢复计时
-local function Resume(self)
+function Timer:Resume()
 	self.started = true
 end
 
 -- 停止计时
-local function Stop(self)
+function Timer:Stop()
 	self.left = 0
 	self.one_shot = false
 	self.target.func = nil
@@ -134,13 +134,13 @@ local function Stop(self)
 end
 
 -- 复位：如果计时器是启动的，并不会停止，只是刷新倒计时
-local function Reset(self)
+function Timer:Reset()
 	self.left = self.delay
 	self.start_frame_count = Time.frameCount
 end
 
 -- 是否已经完成计时
-local function IsOver(self)
+function Timer:IsOver()
 	if self.target.func == nil then
 		return true
 	end
@@ -150,13 +150,13 @@ local function IsOver(self)
 	return self.over
 end
 
-Timer.__init = __init
-Timer.Init = Init
-Timer.Update = Update
-Timer.Start = Start
-Timer.Pause = Pause
-Timer.Resume = Resume
-Timer.Stop = Stop
-Timer.Reset = Reset
-Timer.IsOver = IsOver
+-- Timer.__init = __init
+-- Timer.Init = Init
+-- Timer.Update = Update
+-- Timer.Start = Start
+-- Timer.Pause = Pause
+-- Timer.Resume = Resume
+-- Timer.Stop = Stop
+-- Timer.Reset = Reset
+-- Timer.IsOver = IsOver
 return Timer;

@@ -1,5 +1,4 @@
 --[[
--- added by wsh @ 2018-01-11
 -- UINoticeTip模块窗口配置，要使用还需要导出到UI.Config.UIConfig.lua
 --]]
 

@@ -1,5 +1,4 @@
 --[[
--- added by wsh @ 2017-12-04
 -- UILayers配置
 --]]
 
@@ -41,5 +40,5 @@ local UILayers = {
 		OrderInLayer = 5000,
 	},
 }
-	
+
 return ConstClass("UILayers", UILayers)

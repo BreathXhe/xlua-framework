@@ -4,6 +4,7 @@
 -- TODO：这里只是做一个战斗场景展示Demo，大部分代码以后需要挪除
 --]]
 
+---@class BattleScene:BaseScene
 local BattleScene = BaseClass("BattleScene", BaseScene)
 local base = BaseScene
 
@@ -13,7 +14,7 @@ local CharacterAnimation = require "GameLogic.Battle.CharacterAnimation"
 local chara_res_path = "Models/1001/Character.prefab"
 
 -- 创建：准备预加载资源
-local function OnCreate(self)
+function BattleScene:OnCreate()
 	base.OnCreate(self)
 	-- TODO
 	-- 预加载资源
@@ -25,7 +26,7 @@ local function OnCreate(self)
 end
 
 -- 准备工作
-local function OnComplete(self)
+function BattleScene:OnComplete()
 	base.OnComplete(self)
 	
 	-- 创建角色
@@ -53,14 +54,10 @@ local function OnComplete(self)
 end
 
 -- 离开场景
-local function OnLeave(self)
+function BattleScene:OnLeave()
 	self.charaAnim = nil
 	UIManager:GetInstance():CloseWindow(UIWindowNames.UIBattleMain)
 	base.OnLeave(self)
 end
-
-BattleScene.OnCreate = OnCreate
-BattleScene.OnComplete = OnComplete
-BattleScene.OnLeave = OnLeave
 
 return BattleScene;

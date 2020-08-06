@@ -13,11 +13,12 @@
 --]]
 
 local Messenger = require "Framework.Common.Messenger"
+---@class TimerManager
 local TimerManager = BaseClass("TimerManager", Singleton)
 local UpdateMsgName = "Update"
 
 -- 构造函数
-local function __init(self)
+function TimerManager:__init()
 	-- 成员变量
 	-- handle
 	self.__update_handle = nil
@@ -42,6 +43,11 @@ local function __init(self)
 	self.__coupdate_toadd = {}
 	self.__colateupdate_toadd = {}
 	self.__cofixedupdate_toadd = {}
+end
+
+---@return TimerManager
+function TimerManager:GetInstance()
+	return Singleton.GetInstance(self)
 end
 
 -- 延后回收定时器，必须全部更新完毕再回收，否则会有问题
@@ -134,7 +140,7 @@ local function CoFixedUpdateHandle(self)
 end
 
 -- 启动
-local function Startup(self)
+function TimerManager:Startup()
 	self:Dispose()
 	self.__update_handle = UpdateBeat:CreateListener(UpdateHandle, TimerManager:GetInstance())
 	self.__lateupdate_handle = LateUpdateBeat:CreateListener(LateUpdateHandle, TimerManager:GetInstance())
@@ -151,7 +157,7 @@ local function Startup(self)
 end
 
 -- 释放
-local function Dispose(self)
+function TimerManager:Dispose()
 	if self.__update_handle ~= nil then
 		UpdateBeat:RemoveListener(self.__update_handle)
 		self.__update_handle = nil
@@ -179,7 +185,7 @@ local function Dispose(self)
 end
 
 -- 清理：可用在场景切换前，不清理关系也不大，只是缓存池不会下降
-local function Cleanup(self)
+function TimerManager:Cleanup()
 	self.__update_timer = {}
 	self.__lateupdate_timer = {}
 	self.__fixedupdate_timer = {}
@@ -210,7 +216,7 @@ local function InnerGetTimer(self, delay, func, obj, one_shot, use_frame, unscal
 end
 
 -- 获取Update定时器
-local function GetTimer(self, delay, func, obj, one_shot, use_frame, unscaled)
+function TimerManager:GetTimer( delay, func, obj, one_shot, use_frame, unscaled)
 	assert(not self.__update_timer[timer] and not self.__update_toadd[timer])
 	local timer = InnerGetTimer(self, delay, func, obj, one_shot, use_frame, unscaled)
 	self.__update_toadd[timer] = true
@@ -218,7 +224,7 @@ local function GetTimer(self, delay, func, obj, one_shot, use_frame, unscaled)
 end
 
 -- 获取LateUpdate定时器
-local function GetLateTimer(self, delay, func, obj, one_shot, use_frame, unscaled)
+function TimerManager:GetLateTimer( delay, func, obj, one_shot, use_frame, unscaled)
 	assert(not self.__lateupdate_timer[timer] and not self.__lateupdate_toadd[timer])
 	local timer = InnerGetTimer(self, delay, func, obj, one_shot, use_frame, unscaled)
 	self.__lateupdate_toadd[timer] = true
@@ -226,7 +232,7 @@ local function GetLateTimer(self, delay, func, obj, one_shot, use_frame, unscale
 end
 
 -- 获取FixedUpdate定时器
-local function GetFixedTimer(self, delay, func, obj, one_shot, use_frame)
+function TimerManager:GetFixedTimer( delay, func, obj, one_shot, use_frame)
 	assert(not self.__fixedupdate_timer[timer] and not self.__fixedupdate_toadd[timer])
 	local timer = InnerGetTimer(self, delay, func, obj, one_shot, use_frame, false)
 	self.__fixedupdate_toadd[timer] = true
@@ -234,7 +240,7 @@ local function GetFixedTimer(self, delay, func, obj, one_shot, use_frame)
 end
 
 -- 获取CoUpdate定时器
-local function GetCoTimer(self, delay, func, obj, one_shot, use_frame, unscaled)
+function TimerManager:GetCoTimer(se, delay, func, obj, one_shot, use_frame, unscaled)
 	assert(not self.__coupdate_timer[timer] and not self.__coupdate_toadd[timer])
 	local timer = InnerGetTimer(self, delay, func, obj, one_shot, use_frame, unscaled)
 	self.__coupdate_toadd[timer] = true
@@ -242,7 +248,7 @@ local function GetCoTimer(self, delay, func, obj, one_shot, use_frame, unscaled)
 end
 
 -- 获取CoLateUpdate定时器
-local function GetCoLateTimer(self, delay, func, obj, one_shot, use_frame, unscaled)
+function TimerManager:GetCoLateTimer( delay, func, obj, one_shot, use_frame, unscaled)
 	assert(not self.__colateupdate_timer[timer] and not self.__colateupdate_toadd[timer])
 	local timer = InnerGetTimer(self, delay, func, obj, one_shot, use_frame, unscaled)
 	self.__colateupdate_toadd[timer] = true
@@ -250,7 +256,7 @@ local function GetCoLateTimer(self, delay, func, obj, one_shot, use_frame, unsca
 end
 
 -- 获取CoFixedUpdate定时器
-local function GetCoFixedTimer(self, delay, func, obj, one_shot, use_frame)
+function TimerManager:GetCoFixedTimer( delay, func, obj, one_shot, use_frame)
 	assert(not self.__cofixedupdate_timer[timer] and not self.__cofixedupdate_toadd[timer])
 	local timer = InnerGetTimer(self, delay, func, obj, one_shot, use_frame, unscaled)
 	self.__cofixedupdate_toadd[timer] = true
@@ -258,7 +264,7 @@ local function GetCoFixedTimer(self, delay, func, obj, one_shot, use_frame)
 end
 
 -- 析构函数
-local function __delete(self)
+function TimerManager:__delete()
 	self:Cleanup()
 	self.__update_handle = nil
 	self.__lateupdate_handle = nil
@@ -281,15 +287,15 @@ local function __delete(self)
 	self.__cofixedupdate_toadd = nil
 end
 
-TimerManager.__init = __init
-TimerManager.Startup = Startup
-TimerManager.Cleanup = Cleanup
-TimerManager.Dispose = Dispose
-TimerManager.GetTimer = GetTimer
-TimerManager.GetLateTimer = GetLateTimer
-TimerManager.GetFixedTimer = GetFixedTimer
-TimerManager.GetCoTimer = GetCoTimer
-TimerManager.GetCoLateTimer = GetCoLateTimer
-TimerManager.GetCoFixedTimer = GetCoFixedTimer
-TimerManager.__delete = __delete
+-- TimerManager.__init = __init
+-- TimerManager.Startup = Startup
+-- TimerManager.Cleanup = Cleanup
+-- TimerManager.Dispose = Dispose
+-- TimerManager.GetTimer = GetTimer
+-- TimerManager.GetLateTimer = GetLateTimer
+-- TimerManager.GetFixedTimer = GetFixedTimer
+-- TimerManager.GetCoTimer = GetCoTimer
+-- TimerManager.GetCoLateTimer = GetCoLateTimer
+-- TimerManager.GetCoFixedTimer = GetCoFixedTimer
+-- TimerManager.__delete = __delete
 return TimerManager;

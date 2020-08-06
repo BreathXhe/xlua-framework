@@ -1,13 +1,13 @@
 --[[
--- added by wsh @ 2017-12-15
 -- UI带有子窗口记忆功能的模型层基类：窗口被重新打开时会自动打开之前没有关闭的子级窗口
 --]]
 
+---@class UIBaseRecordModel:UIBaseModel
 local UIBaseRecordModel = BaseClass("UIBaseRecordModel", UIBaseModel)
 local base = UIBaseModel
 
 -- 创建
-local function OnCreate(self)
+function UIBaseRecordModel:OnCreate()
 	base.OnCreate(self)
 	-- 子级窗口栈
 	self.__window_stack = {}
@@ -18,7 +18,7 @@ local function OnCreate(self)
 end
 
 -- 打开
-local function OnEnable(self, ...)
+function UIBaseRecordModel:OnEnable( ...)
 	base.OnEnable(self, ...)
 	-- 重新打开上次保留的窗口
 	table.walk(self.__window_stack, function(index, ui_name)
@@ -28,12 +28,12 @@ local function OnEnable(self, ...)
 end
 
 -- 获取栈
-local function GetWindowStack(self)
+function UIBaseRecordModel:GetWindowStack()
 	return self.__window_stack
 end
 
 -- 清空栈
-local function ClearWindowStack(self)
+function UIBaseRecordModel:ClearWindowStack()
 	self.__window_stack = {}
 end
 
@@ -72,38 +72,38 @@ local function OnWindowClose(self, window)
 end
 
 -- 注册消息
-local function OnAddListener(self)
+function UIBaseRecordModel:OnAddListener()
 	base.OnAddListener(self)
 	self:AddUIListener(UIMessageNames.UIFRAME_ON_WINDOW_OPEN, OnWindowOpen)
 	self:AddUIListener(UIMessageNames.UIFRAME_ON_WINDOW_CLOSE, OnWindowClose)
 end
 
 -- 注销消息
-local function OnRemoveListener(self)
+function UIBaseRecordModel:OnRemoveListener()
 	base.OnRemoveListener(self)
 	self:RemoveUIListener(UIMessageNames.UIFRAME_ON_WINDOW_OPEN, OnWindowOpen)
 	self:RemoveUIListener(UIMessageNames.UIFRAME_ON_WINDOW_CLOSE, OnWindowClose)
 end
 
 -- 关闭
-local function OnDisable(self)
+function UIBaseRecordModel:OnDisable()
 	base.OnDisable(self)
 	self.__enable_record = false
 end
 
 -- 销毁
-local function OnDestroy(self)
+function UIBaseRecordModel:OnDestroy()
 	self.__window_stack = nil
 	base.OnDestroy(self)
 end
 
-UIBaseRecordModel.OnCreate = OnCreate
-UIBaseRecordModel.OnEnable = OnEnable
-UIBaseRecordModel.GetWindowStack = GetWindowStack
-UIBaseRecordModel.ClearWindowStack = ClearWindowStack
-UIBaseRecordModel.OnAddListener = OnAddListener
-UIBaseRecordModel.OnRemoveListener = OnRemoveListener
-UIBaseRecordModel.OnDisable = OnDisable
-UIBaseRecordModel.OnDestroy = OnDestroy
+-- UIBaseRecordModel.OnCreate = OnCreate
+-- UIBaseRecordModel.OnEnable = OnEnable
+-- UIBaseRecordModel.GetWindowStack = GetWindowStack
+-- UIBaseRecordModel.ClearWindowStack = ClearWindowStack
+-- UIBaseRecordModel.OnAddListener = OnAddListener
+-- UIBaseRecordModel.OnRemoveListener = OnRemoveListener
+-- UIBaseRecordModel.OnDisable = OnDisable
+-- UIBaseRecordModel.OnDestroy = OnDestroy
 
 return UIBaseRecordModel
